@@ -5,10 +5,17 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.CollectionCondition.texts;
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
 public class BibliotekaShopTest {
@@ -49,4 +56,24 @@ public class BibliotekaShopTest {
         $(".b-catalog__in").shouldHave(text(item));
 
     }
+    @Tag("CheckButtons")
+    @ParameterizedTest(name = "Для категорий товаров должны быть обязательные подкатегории этих товаров")
+    @MethodSource
+    void checkThePresenceOfTheNecessaryButtonsTest (String value, List<String> items ) {
+        $(".lheader__bottom").$(byText(value)).hover();
+        $$(".lheader__nav .lheader__nav-col-item-title").shouldHave(texts(items));
+    }
+
+    static Stream<Arguments> checkThePresenceOfTheNecessaryButtonsTest () {
+        return Stream.of(
+                Arguments.of(
+                        "Духи",  List.of("Все духи", "Парфюм", "Масляные духи", "Одеколоны")),
+                Arguments.of(
+                        "Для дома", List.of("Все ароматы для дома", "Ароматические диффузоры"))
+
+                );
+
+    }
+
+
 }
